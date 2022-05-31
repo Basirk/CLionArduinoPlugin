@@ -47,20 +47,22 @@ public class SerialMonitorToolWindow {
 
     public SerialMonitorToolWindow(Project project) {
         this.project = project;
-        toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(TOOL_WINDOW_ID, false, ToolWindowAnchor.BOTTOM, project, true);
-        toolWindow.setIcon(PluginIcons.serial_port_tool);
+        toolWindowManager.invokeLater(() -> {
+            toolWindow = ToolWindowManager.getInstance(project).registerToolWindow(TOOL_WINDOW_ID, false, ToolWindowAnchor.BOTTOM, project, true);
+            toolWindow.setIcon(PluginIcons.serial_port_tool);
+                    
+            //JPanel mainPanel = new JPanel(new BorderLayout());
+            //mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+            SimpleToolWindowPanel mainPanel = new SimpleToolWindowPanel(false, true);
 
-        //JPanel mainPanel = new JPanel(new BorderLayout());
-        //mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        SimpleToolWindowPanel mainPanel = new SimpleToolWindowPanel(false, true);
+            mySerialMonitorPanel = new SerialMonitorPanel(project);
+            mainPanel.add(mySerialMonitorPanel.getComponent());
 
-        mySerialMonitorPanel = new SerialMonitorPanel(project);
-        mainPanel.add(mySerialMonitorPanel.getComponent());
-
-        ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
-        Content content = contentFactory.createContent(mainPanel, Bundle.message("toolwindow.serial-monitor.title"), false);
-        myToolWindowContentMap.put(SERIAL_MONITOR_ID, content);
-        toolWindow.getContentManager().addContent(content);
+            ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
+            Content content = contentFactory.createContent(mainPanel, Bundle.message("toolwindow.serial-monitor.title"), false);
+            myToolWindowContentMap.put(SERIAL_MONITOR_ID, content);
+            toolWindow.getContentManager().addContent(content);
+        });
     }
 
     public void unregisterToolWindow() {
